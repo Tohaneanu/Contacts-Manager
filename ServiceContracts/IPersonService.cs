@@ -27,5 +27,13 @@ namespace ServiceContracts
         /// <param name="personID">PersonId (guid) to search</param>
         /// <returns>Matching Person as PersonResponse object</returns>
         PersonResponse? GetPersonByPersonID(Guid? personID);
+
+        /// <summary>
+        /// returns all person objects that matches with the given search field and search string
+        /// </summary>
+        /// <param name="searchBy">Search field to search</param>
+        /// <param name="searchString">Search string to search</param>
+        /// <returns>REturns all matching persons based on the given search field and search string</returns>
+        List<PersonResponse> GetFilteredPersons(string searchBy, string? searchString);
     }
 }
