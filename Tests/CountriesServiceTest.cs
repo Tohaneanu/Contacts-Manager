@@ -21,7 +21,6 @@ namespace Tests
         {
             //Arrange
             CountryAddRequest? request = null;
-
             
             //Assert
             Assert.Throws<ArgumentNullException>(()  => 
@@ -38,7 +37,6 @@ namespace Tests
             //Arrange
             CountryAddRequest? request = new CountryAddRequest() { CountryName = null };
 
-
             //Assert
             Assert.Throws<ArgumentException>(() =>
             {
@@ -54,7 +52,6 @@ namespace Tests
             //Arrange
             CountryAddRequest? request1 = new CountryAddRequest() { CountryName = "Romania" };
             CountryAddRequest? request2 = new CountryAddRequest() { CountryName = "Romania" };
-
 
             //Assert
             Assert.Throws<ArgumentException>(() =>
