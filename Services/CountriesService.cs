@@ -1,13 +1,50 @@
-﻿using ServiceContracts;
+﻿using Entities;
+using ServiceContracts;
 using ServiceContracts.DTO;
 
 namespace Services
 {
     public class CountriesService : ICountriesService
     {
+        private readonly List<Country> _countries;
+        
+        //contructor
+        public CountriesService()
+        {
+            _countries = new List<Country>();
+        }
         public CountryResponse AddCountry(CountryAddRequest? countryAddRequest)
         {
-            throw new NotImplementedException();
+            //Validation: countryAddRequet parameter can't be null
+            if(countryAddRequest == null)
+            {
+                throw new ArgumentNullException(nameof(countryAddRequest));
+            }
+
+            //Validation: CountryName can't be null
+            if (countryAddRequest.CountryName == null) 
+            { 
+                throw new ArgumentException(nameof(countryAddRequest.CountryName));
+            }
+
+            //Validation: CountryName can't be duplicate
+            if (countryAddRequest.CountryName == null)
+            {
+                throw new ArgumentException(nameof(countryAddRequest.CountryName));
+            }
+
+            if (_countries.Where(temp => temp.CountryName == countryAddRequest.CountryName).Count() > 0)
+            {
+                throw new ArgumentException("Given country name already exist");
+            }
+
+            //Convert object from CountryAddRequest to Country type
+            Country country = countryAddRequest.ToCountry();
+            //generate CountryID
+            country.CountryID = Guid.NewGuid();
+            //add country object into _countries
+            _countries.Add(country);
+            return country.ToCountryResponse();
         }
     }
 }
