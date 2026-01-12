@@ -119,46 +119,66 @@ namespace Tests
         }
         #endregion
 
-        //#region GetAllCountries
+        #region GetAllPersons
 
-        ////The list of countries should be empty by default(before adding any countries)
-        //[Fact]
-        //public void GetAllCountries_EmptyList()
-        //{
-        //    //Acts
-        //    List<CountryResponse> actual_country_response_list = _countriesService.GetAllCountries();
+        //The list of persons should be empty by default(before adding any persons)
+        [Fact]
+        public void GetAllPersons_EmptyList()
+        {
+            //Acts
+            List<PersonResponse> actual_persons_response_list = _personService.GetAllPersons();
 
-        //    //Assert
-        //    Assert.Empty(actual_country_response_list);
-        //}
+            //Assert
+            Assert.Empty(actual_persons_response_list);
+        }
 
-        ////The list of countries should be empty by default(before adding any countries)
-        //[Fact]
-        //public void GetAllCountries_AddFewCountries()
-        //{
-        //    //Arrange
-        //    List<CountryAddRequest> country_request_list = new List<CountryAddRequest>()
-        //    {
-        //        new CountryAddRequest(){CountryName = "Romania"},
-        //        new CountryAddRequest(){CountryName = "Italy"}
-        //    };
+        //First, we will add few persons; and then when we call GetAllPersons(), it should return the same persons that were aded
+        [Fact]
+        public void GetAllPersons_AddFewPersons()
+        {
+            //Arrange
+            CountryAddRequest country_request = new CountryAddRequest() { CountryName = "Canada" };
+            CountryResponse? country_response = _countriesService.AddCountry(country_request);
+            List<PersonAddRequest> persons_request_list = new List<PersonAddRequest>()
+            {
+                new PersonAddRequest()
+                { 
+                PersonName = "Andrei",
+                Address = "sample address1",
+                Email = "tohanadr@gmail.com",
+                CountryID = country_response.CountryID,
+                Gender = GenderOptions.Male,
+                DateOfBirth = DateTime.Parse("2000-01-02"),
+                ReceiveNewsLetters = true
+                },
+                new PersonAddRequest()
+                {
+                PersonName = "Dumitru",
+                Address = "sample address2",
+                Email = "tohanadr@yahoo.com",
+                CountryID = country_response.CountryID,
+                Gender = GenderOptions.Male,
+                DateOfBirth = DateTime.Parse("1999-01-02"),
+                ReceiveNewsLetters = false
+                },
+            };
 
-        //    //Act
-        //    List<CountryResponse> country_list_from_add_country = new List<CountryResponse>();
-        //    foreach (var country in country_request_list)
-        //    {
-        //        country_list_from_add_country.Add(_countriesService.AddCountry(country));
-        //    }
-        //    List<CountryResponse> actualCountryResponseList = _countriesService.GetAllCountries();
+            //Act
+            List<PersonResponse> person_list_from_add_person = new List<PersonResponse>();
+            foreach (var person in persons_request_list)
+            {
+                person_list_from_add_person.Add(_personService.AddPerson(person));
+            }
+            List<PersonResponse> actualPersonResponseList = _personService.GetAllPersons();
 
-        //    //Assert
-        //    //read each element from country_list_from_add_country
-        //    foreach (CountryResponse expected_country in country_list_from_add_country)
-        //    {
-        //        Assert.Contains(expected_country, actualCountryResponseList);
-        //    }
-        //}
+            //Assert
+            //read each element from person_list_from_add_country
+            foreach (PersonResponse expected_person in person_list_from_add_person)
+            {
+                Assert.Contains(expected_person, actualPersonResponseList);
+            }
+        }
 
-        //#endregion
+        #endregion
     }
 }
