@@ -3,6 +3,7 @@ using ServiceContracts;
 using ServiceContracts.DTO;
 using Services;
 using ServiceContracts.Enums;
+using Xunit.Abstractions;
 
 namespace Tests
 {
@@ -10,12 +11,14 @@ namespace Tests
     {
         private readonly IPersonService _personService;
         private readonly ICountriesService _countriesService;
+        private readonly ITestOutputHelper _outputHelper;
 
         //constructor
-        public PersonServiceTest()
+        public PersonServiceTest(ITestOutputHelper testOutputHelper)
         {
             _personService = new PersonService();
             _countriesService = new CountriesService();
+            _outputHelper = testOutputHelper;
         }
 
         #region AddPerson
@@ -163,13 +166,27 @@ namespace Tests
                 },
             };
 
-            //Act
             List<PersonResponse> person_list_from_add_person = new List<PersonResponse>();
             foreach (var person in persons_request_list)
             {
                 person_list_from_add_person.Add(_personService.AddPerson(person));
             }
+
+            //print person_list_from_add_person
+            _outputHelper.WriteLine("Expected:");
+            foreach(PersonResponse person in person_list_from_add_person)
+            {
+                _outputHelper.WriteLine(person.ToString());
+            }
+
+            //Act
             List<PersonResponse> actualPersonResponseList = _personService.GetAllPersons();
+            //print actualPersonResponseList
+            _outputHelper.WriteLine("Actual:");
+            foreach (PersonResponse person in actualPersonResponseList)
+            {
+                _outputHelper.WriteLine(person.ToString());
+            }
 
             //Assert
             //read each element from person_list_from_add_country
