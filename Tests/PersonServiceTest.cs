@@ -347,5 +347,83 @@ namespace Tests
             }
         }
         #endregion
+
+        #region GetSortedPersons
+
+        //When we sort based on PersonName in DESC, it should return persons list in descending on PersonName
+        [Fact]
+        public void GetSortedPersons()
+        {
+            //Arrange
+            CountryAddRequest country_request1 = new CountryAddRequest() { CountryName = "Canada" };
+            CountryResponse? country_response1 = _countriesService.AddCountry(country_request1);
+            CountryAddRequest country_request2 = new CountryAddRequest() { CountryName = "Andora" };
+            CountryResponse? country_response2 = _countriesService.AddCountry(country_request2);
+            List<PersonAddRequest> persons_request_list = new List<PersonAddRequest>()
+            {
+                new PersonAddRequest()
+                {
+                PersonName = "Andrei",
+                Address = "sample address1",
+                Email = "tohanadr@gmail.com",
+                CountryID = country_response1.CountryID,
+                Gender = GenderOptions.Male,
+                DateOfBirth = DateTime.Parse("2000-01-02"),
+                ReceiveNewsLetters = true
+                },
+                new PersonAddRequest()
+                {
+                PersonName = "Dumitru",
+                Address = "sample address2",
+                Email = "tohanadr@yahoo.com",
+                CountryID = country_response2.CountryID,
+                Gender = GenderOptions.Male,
+                DateOfBirth = DateTime.Parse("1999-01-02"),
+                ReceiveNewsLetters = false
+                },
+                new PersonAddRequest()
+                {
+                PersonName = "Alis",
+                Address = "sample address A",
+                Email = "alis@yahoo.com",
+                CountryID = country_response2.CountryID,
+                Gender = GenderOptions.Female,
+                DateOfBirth = DateTime.Parse("2004-01-02"),
+                ReceiveNewsLetters = true
+                },
+            };
+
+            List<PersonResponse> person_list_from_add_person = new List<PersonResponse>();
+            foreach (var person in persons_request_list)
+            {
+                person_list_from_add_person.Add(_personService.AddPerson(person));
+            }
+
+            //print person_list_from_add_person
+            _outputHelper.WriteLine("Expected:");
+            person_list_from_add_person = person_list_from_add_person.OrderByDescending(temp => temp.PersonName).ToList();
+            foreach (PersonResponse person in person_list_from_add_person)
+            {
+                _outputHelper.WriteLine(person.ToString());
+            }
+
+            List<PersonResponse> allPersons = _personService.GetAllPersons();
+            //Act
+            List<PersonResponse> persons_list_from_sort = _personService.GetSortedPersons(allPersons,nameof(PersonResponse.PersonName), SortOrderOptions.DESC);
+            //print actualPersonResponseList
+            _outputHelper.WriteLine("Actual:");
+            foreach (PersonResponse person in persons_list_from_sort)
+            {
+                _outputHelper.WriteLine(person.ToString());
+            }
+
+            //Assert
+            for (int i = 0; i < person_list_from_add_person.Count; i++)
+            {
+                Assert.Equal(person_list_from_add_person[i],persons_list_from_sort[i]);
+            }
+        }
+
+        #endregion
     }
 }
