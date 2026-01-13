@@ -409,7 +409,7 @@ namespace Tests
 
             List<PersonResponse> allPersons = _personService.GetAllPersons();
             //Act
-            List<PersonResponse> persons_list_from_sort = _personService.GetSortedPersons(allPersons,nameof(PersonResponse.PersonName), SortOrderOptions.DESC);
+            List<PersonResponse> persons_list_from_sort = _personService.GetSortedPersons(allPersons, nameof(PersonResponse.PersonName), SortOrderOptions.DESC);
             //print actualPersonResponseList
             _outputHelper.WriteLine("Actual:");
             foreach (PersonResponse person in persons_list_from_sort)
@@ -420,8 +420,105 @@ namespace Tests
             //Assert
             for (int i = 0; i < person_list_from_add_person.Count; i++)
             {
-                Assert.Equal(person_list_from_add_person[i],persons_list_from_sort[i]);
+                Assert.Equal(person_list_from_add_person[i], persons_list_from_sort[i]);
             }
+        }
+
+        #endregion
+
+        #region UpdatePerson
+
+        //When we supply null as PersonUpdateRequest, it should throw ArgumentNullException
+        [Fact]
+        public void UpdatePerson_NullPerson()
+        {
+            //Arrange
+            PersonUpdateRequest? personUpdateRequest = null;
+
+            //Assert
+            Assert.Throws<ArgumentNullException>(() =>
+            {
+                //Act
+                _personService.UpdatePerson(personUpdateRequest);
+            });
+        }
+
+        //When we supply invalid peronID, it should throw ArgumentException
+        [Fact]
+        public void UpdatePerson_InvalidPersonID()
+        {
+            //Arrange
+            PersonUpdateRequest? personUpdateRequest = new PersonUpdateRequest()
+            {
+                PersonID = Guid.NewGuid(),
+            };
+
+            //Assert
+            Assert.Throws<ArgumentException>(() =>
+            {
+                //Act
+                _personService.UpdatePerson(personUpdateRequest);
+            });
+        }
+
+        //When personName is null, it should throw ArgumentException
+        [Fact]
+        public void UpdatePerson_PersonNameIsNull()
+        {
+            //Arrange
+            CountryAddRequest country_add_request = new CountryAddRequest() { CountryName = "China" };
+            CountryResponse? country_response_from_add = _countriesService.AddCountry(country_add_request);
+            PersonAddRequest? person_add_request = new PersonAddRequest()
+            {
+                PersonName = "Andrei",
+                Address = "sample address",
+                Email = "tohanadr@gmail.com",
+                CountryID = country_response_from_add.CountryID,
+                Gender = GenderOptions.Male,
+                DateOfBirth = DateTime.Parse("2000-01-02"),
+                ReceiveNewsLetters = false
+            };
+            PersonResponse person_response_from_add = _personService.AddPerson(person_add_request);
+
+            PersonUpdateRequest? person_update_request = person_response_from_add.ToPersonUpdateRequest();
+            person_update_request.PersonName = null;
+
+            //Assert
+            Assert.Throws<ArgumentException>(() =>
+            {
+                //Act
+                _personService.UpdatePerson(person_update_request);
+            });
+        }
+
+        //First, add a new person and try to update the person name and email
+        [Fact]
+        public void UpdatePerson_PersonFullDetailsUpdation()
+        {
+            //Arrange
+            CountryAddRequest country_add_request = new CountryAddRequest() { CountryName = "China" };
+            CountryResponse? country_response_from_add = _countriesService.AddCountry(country_add_request);
+            PersonAddRequest? person_add_request = new PersonAddRequest()
+            {
+                PersonName = "Andrei",
+                Address = "sample address",
+                Email = "tohanadr@gmail.com",
+                CountryID = country_response_from_add.CountryID,
+                Gender = GenderOptions.Male,
+                DateOfBirth = DateTime.Parse("2000-01-02"),
+                ReceiveNewsLetters = false
+            };
+            PersonResponse person_response_from_add = _personService.AddPerson(person_add_request);
+
+            PersonUpdateRequest? person_update_request = person_response_from_add.ToPersonUpdateRequest();
+            person_update_request.PersonName = "Will";
+            person_update_request.Email = "w@sch.com";
+
+            //Act
+            PersonResponse person_response_from_update = _personService.UpdatePerson(person_update_request);
+            PersonResponse? person_response_from_get = _personService.GetPersonByPersonID(person_response_from_update.PersonID);
+            //Assert
+            Assert.Equal(person_response_from_update, person_response_from_get);
         }
 
         #endregion

@@ -46,7 +46,11 @@ namespace ServiceContracts
         /// <returns>Returns sorted persons as PersonResponse list</returns>
         List<PersonResponse> GetSortedPersons(List<PersonResponse> allPersons, string sortBy, SortOrderOptions sortOrder);
 
-
-
+        /// <summary>
+        /// Updates the specified person details based on the given personID
+        /// </summary>
+        /// <param name="personUpdateRequest">Person details to update, including personID</param>
+        /// <returns>Returns the person response object after updation</returns>
+        PersonResponse UpdatePerson(PersonUpdateRequest? personUpdateRequest);
     }
 }
