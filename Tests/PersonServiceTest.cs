@@ -522,5 +522,46 @@ namespace Tests
         }
 
         #endregion
+
+        #region DeletePerson
+
+        //If you supply an valid personId, it should return true
+        [Fact]
+        public void DeletePerson_ValidPersonID()
+        {
+            //Arrange
+            CountryAddRequest country_add_request = new CountryAddRequest() { CountryName = "USA" };
+            CountryResponse? country_response_from_add = _countriesService.AddCountry(country_add_request);
+            PersonAddRequest? person_add_request = new PersonAddRequest()
+            {
+                PersonName = "Andrei",
+                Address = "sample address",
+                Email = "tohanadr@gmail.com",
+                CountryID = country_response_from_add.CountryID,
+                Gender = GenderOptions.Male,
+                DateOfBirth = DateTime.Parse("2000-01-02"),
+                ReceiveNewsLetters = false
+            };
+            PersonResponse person_response_from_add = _personService.AddPerson(person_add_request);
+
+            //Act
+            bool isDeleted = _personService.DeletePerson(person_response_from_add.PersonID);
+
+            //Assertion
+            Assert.True(isDeleted);
+        }
+
+        //If you supply an invalid personId, it should return false
+        [Fact]
+        public void DeletePerson_InvalidPersonID()
+        {
+            //Act
+            bool isDeleted = _personService.DeletePerson(Guid.NewGuid());
+
+            //Assertion
+            Assert.False(isDeleted);
+        }
+
+        #endregion
     }
 }

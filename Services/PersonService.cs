@@ -179,5 +179,10 @@ namespace Services
 
             return matchingPerson.ToPersonResponse();
         }
+
+        public bool DeletePerson(Guid? personID)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
