@@ -147,30 +147,30 @@ namespace Services
                      => allPersons.OrderBy(temp => temp.ReceiveNewsLetters).ToList(),
                 (nameof(PersonResponse.ReceiveNewsLetters), SortOrderOptions.DESC)
                => allPersons.OrderByDescending(temp => temp.ReceiveNewsLetters).ToList(),
-               _ => allPersons
+                _ => allPersons
             };
             return sortedPersons;
         }
 
         public PersonResponse UpdatePerson(PersonUpdateRequest? personUpdateRequest)
         {
-            if(personUpdateRequest == null)
+            if (personUpdateRequest == null)
             {
-                throw new ArgumentNullException(nameof(Person));
+                throw new ArgumentNullException(nameof(personUpdateRequest));
             }
             //validation
             ValidationHelper.ModelValidation(personUpdateRequest);
 
             //get matching person opject to update
             Person? matchingPerson = _persons.FirstOrDefault(temp => temp.PersonID == personUpdateRequest.PersonID);
-            if(matchingPerson == null)
+            if (matchingPerson == null)
             {
                 throw new ArgumentException("Given person id doesn't exist");
             }
-            
+
             //update all details
             matchingPerson.PersonName = personUpdateRequest.PersonName;
-            matchingPerson.Gender =personUpdateRequest.Gender.ToString();
+            matchingPerson.Gender = personUpdateRequest.Gender.ToString();
             matchingPerson.Address = personUpdateRequest.Address;
             matchingPerson.DateOfBirth = personUpdateRequest.DateOfBirth;
             matchingPerson.Email = personUpdateRequest.Email;
@@ -182,7 +182,17 @@ namespace Services
 
         public bool DeletePerson(Guid? personID)
         {
-            throw new NotImplementedException();
+            if (personID == null)
+            {
+                throw new ArgumentNullException(nameof(personID));
+            }
+            Person? person = _persons.FirstOrDefault(temp => temp.PersonID.Equals(personID));
+            if (person == null)
+            {
+                return false;
+            }
+            _persons.RemoveAll(temp => temp.PersonID.Equals(personID));
+            return true;
         }
     }
 }
