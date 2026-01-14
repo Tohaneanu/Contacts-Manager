@@ -1,6 +1,7 @@
 ﻿
 using Entities;
 using ServiceContracts.Enums;
+using System;
 using System.Runtime.CompilerServices;
 
 namespace ServiceContracts.DTO
@@ -62,6 +63,7 @@ namespace ServiceContracts.DTO
                    PersonName = PersonName,
                    Email = Email,
                    DateOfBirth = DateOfBirth,
+                   CountryID = CountryID,
                    Gender = (GenderOptions)Enum.Parse(typeof(GenderOptions), Gender!, true),
                    Address = Address,
                    ReceiveNewsLetters = ReceiveNewsLetters                   
