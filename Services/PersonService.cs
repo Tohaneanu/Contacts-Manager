@@ -4,7 +4,6 @@ using ServiceContracts;
 using ServiceContracts.DTO;
 using ServiceContracts.Enums;
 using Services.Helpers;
-using System.ComponentModel.DataAnnotations;
 
 namespace Services
 {
@@ -149,7 +148,7 @@ Clim,cnieasse@wordpress.com,2001-10-10,Male,3 Lake View Point,false
 
         public List<PersonResponse> GetAllPersons()
         {
-            return _persons.Select(temp => temp.ToPersonResponse()).ToList();
+            return _persons.Select(temp => ConvertPersonToPersonResponse(temp)).ToList();
         }
 
         public PersonResponse? GetPersonByPersonID(Guid? personID)
@@ -163,7 +162,7 @@ Clim,cnieasse@wordpress.com,2001-10-10,Male,3 Lake View Point,false
             {
                 return null;
             }
-            return person.ToPersonResponse();
+            return ConvertPersonToPersonResponse(person);
         }
 
         public List<PersonResponse> GetFilteredPersons(string searchBy, string? searchString)
@@ -277,7 +276,7 @@ Clim,cnieasse@wordpress.com,2001-10-10,Male,3 Lake View Point,false
             matchingPerson.CountryID = personUpdateRequest.CountryID;
             matchingPerson.ReceiveNewsLetters = personUpdateRequest.ReceiveNewsLetters;
 
-            return matchingPerson.ToPersonResponse();
+            return ConvertPersonToPersonResponse(matchingPerson);
         }
 
         public bool DeletePerson(Guid? personID)
