@@ -77,17 +77,6 @@ namespace Services
                 });
                 _persons.Add(new Person()
                 {
-                    PersonID = Guid.Parse("D233EED8-A532-4CE3-830D-C6B4AF3421C2"),
-                    PersonName = "Cesya",
-                    Email = "ciacovuzzi4@istockphoto.com",
-                    DateOfBirth = DateTime.Parse("2000-09-17"),
-                    Gender = "Female",
-                    Address = "208 Anniversary Alley",
-                    ReceiveNewsLetters = true,
-                    CountryID = Guid.Parse("1E91FE60-B4B4-4FE3-A0CA-1B910498C453")
-                });
-                _persons.Add(new Person()
-                {
                     PersonID = Guid.Parse("F9B12DDF-C442-485E-90F1-5F933A723153"),
                     PersonName = "Audra",
                     Email = "alilleyman5@fc2.com",
@@ -108,9 +97,18 @@ namespace Services
                     ReceiveNewsLetters = true,
                     CountryID = Guid.Parse("1E91FE60-B4B4-4FE3-A0CA-1B910498C453")
                 });
+                _persons.Add(new Person()
+                {
+                    PersonID = Guid.Parse("37339429-E583-41D5-8D86-43497CE8A89D"),
+                    PersonName = "Rafe",
+                    Email = "rwandtke7@creativecommons.org",
+                    DateOfBirth = DateTime.Parse("1999-05-01"),
+                    Gender = "Male",
+                    Address = "037 Esch Crossing",
+                    ReceiveNewsLetters = true,
+                    CountryID = Guid.Parse("1E91FE60-B4B4-4FE3-A0CA-1B910498C453")
+                });
                 /*
-Jay,jpelfer6@nyu.edu,1996-04-06,Male,80 Starling Terrace,true
-Rafe,rwandtke7@creativecommons.org,1999-05-01,Male,037 Esch Crossing,true
 Stephan,sbownas8@unesco.org,1997-12-07,Male,8507 Sunnyside Drive,false
 Nigel,ncolloby9@nbcnews.com,1993-04-30,Male,7 Steensland Park,false
 Agustin,alaysona@epa.gov,1992-06-07,Male,6803 Mcguire Avenue,true
@@ -178,27 +176,27 @@ Clim,cnieasse@wordpress.com,2001-10-10,Male,3 Lake View Point,false
             }
             switch (searchBy)
             {
-                case nameof(Person.PersonName):
+                case nameof(PersonResponse.PersonName):
                     matchingPersons = allPersons.Where(temp =>
                     !string.IsNullOrEmpty(temp.PersonName) ? temp.PersonName.Contains(searchString, StringComparison.OrdinalIgnoreCase) : true).ToList();
                     break;
-                case nameof(Person.Email):
+                case nameof(PersonResponse.Email):
                     matchingPersons = allPersons.Where(temp =>
                   !string.IsNullOrEmpty(temp.Email) ? temp.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase) : true).ToList();
                     break;
-                case nameof(Person.DateOfBirth):
+                case nameof(PersonResponse.DateOfBirth):
                     matchingPersons = allPersons.Where(temp =>
                   temp.DateOfBirth != null ? temp.DateOfBirth.Value.ToString("dd mmm yyyy").Contains(searchString, StringComparison.OrdinalIgnoreCase) : true).ToList();
                     break;
-                case nameof(Person.Gender):
+                case nameof(PersonResponse.Gender):
                     matchingPersons = allPersons.Where(temp =>
-                  !string.IsNullOrEmpty(temp.Gender) ? temp.Gender.Contains(searchString, StringComparison.OrdinalIgnoreCase) : true).ToList();
+                  !string.IsNullOrEmpty(temp.Gender) ? temp.Gender.Equals(searchString, StringComparison.OrdinalIgnoreCase) : true).ToList();
                     break;
-                case nameof(Person.CountryID):
+                case nameof(PersonResponse.CountryID):
                     matchingPersons = allPersons.Where(temp =>
                   !string.IsNullOrEmpty(temp.Country) ? temp.Country.Contains(searchString, StringComparison.OrdinalIgnoreCase) : true).ToList();
                     break;
-                case nameof(Person.Address):
+                case nameof(PersonResponse.Address):
                     matchingPersons = allPersons.Where(temp =>
                   !string.IsNullOrEmpty(temp.Address) ? temp.Address.Contains(searchString, StringComparison.OrdinalIgnoreCase) : true).ToList();
                     break;
