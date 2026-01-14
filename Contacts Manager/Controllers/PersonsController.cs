@@ -116,7 +116,32 @@ namespace Contacts_Manager.Controllers
             List<CountryResponse> countries = _countresService.GetAllCountries();
             ViewBag.Countries = countries;
             ViewBag.Errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
-            return View();
+            return View(personResponse.ToPersonUpdateRequest());
+        }
+
+        [HttpGet]
+        [Route("[action]/{personID}")]
+        public IActionResult Delete(Guid personID)
+        {
+            PersonResponse? personResponse = _personService.GetPersonByPersonID(personID);
+            if (personResponse == null)
+            {
+                return RedirectToAction("Index");
+            }
+            return View(personResponse);
+        }
+
+        [HttpPost]
+        [Route("[action]/{personID}")]
+        public IActionResult Delete(PersonUpdateRequest person)
+        {
+            PersonResponse? personResponse = _personService.GetPersonByPersonID(person.PersonID);
+            if (personResponse == null)
+            {
+                return RedirectToAction("Index");
+            }
+            _personService.DeletePerson(personResponse.PersonID);
+            return RedirectToAction("Index");
         }
     }
 }
