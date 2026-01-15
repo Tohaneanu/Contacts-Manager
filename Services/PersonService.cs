@@ -42,8 +42,11 @@ namespace Services
             //generate PersonID
             person.PersonID = Guid.NewGuid();
             //add person object into _db
-            _db.Persons.Add(person);
-            _db.SaveChanges();
+            //without procedure
+            //_db.Persons.Add(person);
+            //_db.SaveChanges();
+            //with procedure:
+            _db.sp_InsertPerson(person);
             return ConvertPersonToPersonResponse(person);
         }
 
