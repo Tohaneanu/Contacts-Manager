@@ -43,17 +43,17 @@ namespace Services
             person.PersonID = Guid.NewGuid();
             //add person object into _db
             //without procedure
-            //_db.Persons.Add(person);
-            //_db.SaveChanges();
+            _db.Persons.Add(person);
+            _db.SaveChanges();
             //with procedure:
-            _db.sp_InsertPerson(person);
+            //_db.sp_InsertPerson(person);
             return ConvertPersonToPersonResponse(person);
         }
 
         public List<PersonResponse> GetAllPersons()
         {
-            //return _db.Persons.ToList().Select(temp => ConvertPersonToPersonResponse(temp)).ToList();
-            return _db.sp_GetAllPersons().Select(temp => ConvertPersonToPersonResponse(temp)).ToList();
+            return _db.Persons.ToList().Select(temp => ConvertPersonToPersonResponse(temp)).ToList();
+            // return _db.sp_GetAllPersons().Select(temp => ConvertPersonToPersonResponse(temp)).ToList();
         }
 
         public PersonResponse? GetPersonByPersonID(Guid? personID)
