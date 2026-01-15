@@ -66,7 +66,7 @@ namespace ServiceContracts.DTO
                    CountryID = CountryID,
                    Gender = (GenderOptions)Enum.Parse(typeof(GenderOptions), Gender!, true),
                    Address = Address,
-                   ReceiveNewsLetters = ReceiveNewsLetters                   
+                   ReceiveNewsLetters = ReceiveNewsLetters,                 
             };
         }
     }
@@ -91,7 +91,8 @@ namespace ServiceContracts.DTO
                 Address = person.Address,
                 CountryID = person.CountryID,
                 Gender = person.Gender,
-                Age = (person.DateOfBirth != null) ? Math.Round((DateTime.Now - person.DateOfBirth.Value).TotalDays / 365.25) : null
+                Age = (person.DateOfBirth != null) ? Math.Round((DateTime.Now - person.DateOfBirth.Value).TotalDays / 365.25) : null,
+                Country = person.Country?.CountryName
             };
         }
     }

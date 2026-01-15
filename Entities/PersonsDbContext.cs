@@ -40,6 +40,12 @@ namespace Entities
                     "CHK_Persons_TaxIdentificationNumber",
                     "LEN([TaxIdentificationNumber]) = 8"
                 ));
+
+            //Table Relations
+            //modelBuilder.Entity<Person>(entity =>
+            //{
+            //    entity.HasOne(e => e.Country).WithMany(p=>p.Perons).HasForeignKey(persons=>persons.CountryId);
+            //});
         }
         public List<Person> sp_GetAllPersons()
         {
