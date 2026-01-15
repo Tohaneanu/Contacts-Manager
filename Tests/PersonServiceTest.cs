@@ -1,8 +1,10 @@
 ﻿
+using Entities;
+using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using ServiceContracts.DTO;
-using Services;
 using ServiceContracts.Enums;
+using Services;
 using Xunit.Abstractions;
 
 namespace Tests
@@ -16,8 +18,8 @@ namespace Tests
         //constructor
         public PersonServiceTest(ITestOutputHelper testOutputHelper)
         {
-            _personService = new PersonService(false);
-            _countriesService = new CountriesService(false);
+            _countriesService = new CountriesService(new PersonsDbContext(new DbContextOptionsBuilder<PersonsDbContext>().Options));
+            _personService = new PersonService(new PersonsDbContext(new DbContextOptionsBuilder<PersonsDbContext>().Options), _countriesService);
             _outputHelper = testOutputHelper;
         }
 
