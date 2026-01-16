@@ -2,11 +2,13 @@
 using AutoFixture;
 using Entities;
 using EntityFrameworkCoreMock;
+using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using ServiceContracts.DTO;
 using ServiceContracts.Enums;
 using Services;
+using System;
 using Xunit.Abstractions;
 
 namespace Tests
@@ -45,11 +47,12 @@ namespace Tests
             PersonAddRequest? request = null;
 
             //Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            Func<Task> action = async () =>
             {
                 //Act
                 await _personService.AddPerson(request);
-            });
+            };
+            await action.Should().ThrowAsync<ArgumentNullException>();
         }
 
         //When PersonName is null, it should trow ArgumentException
@@ -60,11 +63,12 @@ namespace Tests
             PersonAddRequest? request = _fixture.Build<PersonAddRequest>().With(temp => temp.PersonName, null as string).Create();
 
             //Assert
-            await Assert.ThrowsAsync<ArgumentException>(async () =>
+            Func<Task> action = async () =>
             {
                 //Act
                 await _personService.AddPerson(request);
-            });
+            };
+            await action.Should().ThrowAsync<ArgumentException>();
         }
 
         //When you supply proper Person details, it should insert(add) the Person to the existing
@@ -80,8 +84,10 @@ namespace Tests
             List<PersonResponse> persons_from_GetAllPersons = await _personService.GetAllPersons();
 
             //Assert
-            Assert.True(responseResponse.PersonID != Guid.Empty);
-            Assert.Contains(responseResponse, persons_from_GetAllPersons);
+            //Assert.True(responseResponse.PersonID != Guid.Empty);
+            responseResponse.PersonID.Should().NotBe(Guid.Empty);
+            //Assert.Contains(responseResponse, persons_from_GetAllPersons);
+            persons_from_GetAllPersons.Should().Contain(responseResponse);
         }
 
         #endregion
@@ -98,7 +104,8 @@ namespace Tests
             PersonResponse? person_response_from_get_method = await _personService.GetPersonByPersonID(personID);
 
             //Assert
-            Assert.Null(person_response_from_get_method);
+            //Assert.Null(person_response_from_get_method);
+            person_response_from_get_method.Should().BeNull();
         }
 
         //If we supply a valid person id, it should return the matching person details as personResponse object
@@ -115,7 +122,8 @@ namespace Tests
             PersonResponse? person_response_from_get_method = await _personService.GetPersonByPersonID(person_response_from_add_request.PersonID);
 
             //Assert
-            Assert.Equal(person_response_from_add_request, person_response_from_get_method);
+            //Assert.Equal(person_response_from_add_request, person_response_from_get_method);
+            person_response_from_get_method.Should().Be(person_response_from_add_request);
         }
         #endregion
 
@@ -129,7 +137,8 @@ namespace Tests
             List<PersonResponse> actual_persons_response_list = await _personService.GetAllPersons();
 
             //Assert
-            Assert.Empty(actual_persons_response_list);
+            //Assert.Empty(actual_persons_response_list);
+            actual_persons_response_list.Should().BeEmpty();
         }
 
         //First, we will add few persons; and then when we call GetAllPersons(), it should return the same persons that were aded
@@ -170,10 +179,11 @@ namespace Tests
             }
 
             //Assert
-            foreach (PersonResponse expected_person in person_list_from_add_person)
-            {
-                Assert.Contains(expected_person, actualPersonResponseList);
-            }
+            //foreach (PersonResponse expected_person in person_list_from_add_person)
+            //{
+            //    Assert.Contains(expected_person, actualPersonResponseList);
+            //} 
+            actualPersonResponseList.Should().BeEquivalentTo(person_list_from_add_person);
         }
 
         #endregion
@@ -222,10 +232,12 @@ namespace Tests
             }
 
             //Assert
-            foreach (PersonResponse expected_person in person_list_from_add_person)
-            {
-                Assert.Contains(expected_person, persons_list_from_search);
-            }
+            //foreach (PersonResponse expected_person in person_list_from_add_person)
+            //{
+            //    Assert.Contains(expected_person, persons_list_from_search);
+
+            //}
+            persons_list_from_search.Should().BeEquivalentTo(person_list_from_add_person);
         }
 
         //First we will add few persons; and then we will search based on person name with some search string.It should return the matching person
@@ -270,14 +282,14 @@ namespace Tests
             }
 
             //Assert
-            foreach (PersonResponse expected_person in person_list_from_add_person)
-            {
-                if (expected_person.PersonName != null && expected_person.PersonName.Contains("a", StringComparison.OrdinalIgnoreCase))
-                {
-                    Assert.Contains(expected_person, persons_list_from_search);
-                }
-
-            }
+            //foreach (PersonResponse expected_person in person_list_from_add_person)
+            //{
+            //    if (expected_person.PersonName != null && expected_person.PersonName.Contains("a", StringComparison.OrdinalIgnoreCase))
+            //    {
+            //        Assert.Contains(expected_person, persons_list_from_search);
+            //    }
+            //}
+            persons_list_from_search.Should().OnlyContain(temp => temp.PersonName != null && temp.PersonName.Contains("a", StringComparison.OrdinalIgnoreCase));
         }
         #endregion
 
@@ -327,10 +339,12 @@ namespace Tests
             }
 
             //Assert
-            for (int i = 0; i < person_list_from_add_person.Count; i++)
-            {
-                Assert.Equal(person_list_from_add_person[i], persons_list_from_sort[i]);
-            }
+            //for (int i = 0; i < person_list_from_add_person.Count; i++)
+            //{
+            //    Assert.Equal(person_list_from_add_person[i], persons_list_from_sort[i]);
+            //}
+            //persons_list_from_sort.Should().BeEquivalentTo(person_list_from_add_person);
+            persons_list_from_sort.Should().BeInDescendingOrder(temp => temp.PersonName);
         }
 
         #endregion
@@ -345,11 +359,12 @@ namespace Tests
             PersonUpdateRequest? personUpdateRequest = null;
 
             //Assert
-            await Assert.ThrowsAsync<ArgumentNullException>(async () =>
+            Func<Task> action = async () =>
             {
                 //Act
                 await _personService.UpdatePerson(personUpdateRequest);
-            });
+            };
+            await action.Should().ThrowAsync<ArgumentNullException>();
         }
 
         //When we supply invalid peronID, it should throw ArgumentException
@@ -360,11 +375,12 @@ namespace Tests
             PersonUpdateRequest? personUpdateRequest = _fixture.Create<PersonUpdateRequest>();
 
             //Assert
-            await Assert.ThrowsAsync<ArgumentException>(async () =>
+            Func<Task> action = async () =>
             {
                 //Act
                 await _personService.UpdatePerson(personUpdateRequest);
-            });
+            };
+            await action.Should().ThrowAsync<ArgumentException>();
         }
 
         //When personName is null, it should throw ArgumentException
@@ -382,11 +398,12 @@ namespace Tests
             person_update_request.PersonName = null;
 
             //Assert
-            await Assert.ThrowsAsync<ArgumentException>(async () =>
+            Func<Task> action = async () =>
             {
                 //Act
                 await _personService.UpdatePerson(person_update_request);
-            });
+            };
+            await action.Should().ThrowAsync<ArgumentException>();
         }
 
         //First, add a new person and try to update the person name and email
@@ -408,7 +425,8 @@ namespace Tests
             PersonResponse person_response_from_update = await _personService.UpdatePerson(person_update_request);
             PersonResponse? person_response_from_get = await _personService.GetPersonByPersonID(person_response_from_update.PersonID);
             //Assert
-            Assert.Equal(person_response_from_update, person_response_from_get);
+            //Assert.Equal(person_response_from_update, person_response_from_get);
+            person_response_from_update.Should().Be(person_response_from_get);
         }
 
         #endregion
@@ -430,7 +448,8 @@ namespace Tests
             bool isDeleted = await _personService.DeletePerson(person_response_from_add.PersonID);
 
             //Assertion
-            Assert.True(isDeleted);
+            //Assert.True(isDeleted);
+            isDeleted.Should().BeTrue();
         }
 
         //If you supply an invalid personId, it should return false
@@ -441,7 +460,8 @@ namespace Tests
             bool isDeleted = await _personService.DeletePerson(Guid.NewGuid());
 
             //Assertion
-            Assert.False(isDeleted);
+            //Assert.False(isDeleted);
+            isDeleted.Should().BeFalse();
         }
 
         #endregion
