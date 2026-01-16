@@ -1,5 +1,7 @@
 ﻿using Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using ServiceContracts;
 using ServiceContracts.DTO;
 
@@ -13,7 +15,7 @@ namespace Services
         public CountriesService(PersonsDbContext personsDbContext)
         {
             _db = personsDbContext;
-           
+
         }
 
         public async Task<CountryResponse> AddCountry(CountryAddRequest? countryAddRequest)
@@ -63,6 +65,39 @@ namespace Services
             if (country_response_from_list == null) { return null; }
 
             return country_response_from_list.ToCountryResponse();
+        }
+
+        public async Task<int> UploadCountriesFromExcelFile(IFormFile formFile)
+        {
+            MemoryStream stream = new MemoryStream();
+            await formFile.CopyToAsync(stream);
+            int countriesInserted = 0;
+            using (ExcelPackage excelPackage = new ExcelPackage(stream))
+            {
+                ExcelWorksheet excelWorksheet = excelPackage.Workbook.Worksheets["Countries"];
+                int rowCount = excelWorksheet.Dimension.Rows;
+
+                for (int i = 2; i <= rowCount; i++)
+                {
+                    string? cellValue = Convert.ToString(excelWorksheet.Cells[i, 1].Value);
+                    if (!string.IsNullOrEmpty(cellValue))
+                    {
+                        string countryName = cellValue;
+                        int countriesCount = await _db.Countries.Where(country => country.CountryName == countryName).CountAsync();
+                        if (countriesCount == 0)
+                        {
+                            Country country = new Country()
+                            {
+                                CountryName = countryName,
+                            };
+                            _db.Countries.Add(country);
+                            await _db.SaveChangesAsync();
+                            countriesInserted++;
+                        }
+                    }
+                }
+            }
+            return countriesInserted;
         }
     }
 }
