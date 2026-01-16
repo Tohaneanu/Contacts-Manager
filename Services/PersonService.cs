@@ -1,131 +1,31 @@
 ﻿
+using CsvHelper;
+using CsvHelper.Configuration;
 using Entities;
+using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using ServiceContracts;
 using ServiceContracts.DTO;
 using ServiceContracts.Enums;
 using Services.Helpers;
+using System;
+using System.Globalization;
 
 namespace Services
 {
     public class PersonService : IPersonService
     {
-        private readonly List<Person> _persons;
+        private readonly PersonsDbContext _db;
         private readonly ICountriesService _countriesService;
 
         //contructor
-        public PersonService(bool initialize = true)
+        public PersonService(PersonsDbContext personsDbContext, ICountriesService countriesService)
         {
-            _persons = new List<Person>();
-            _countriesService = new CountriesService();
-            if (initialize)
-            {
-                _persons.Add(new Person()
-                {
-                    PersonID = Guid.Parse("172FDF1A-7EED-4ABB-A994-056C937952BA"),
-                    PersonName = "Gordon",
-                    Email = "gtoon0@csmonitor.com",
-                    DateOfBirth = DateTime.Parse("1998-12-28"),
-                    Gender = "Male",
-                    Address = "47037 Hooker Avenue",
-                    ReceiveNewsLetters = false,
-                    CountryID = Guid.Parse("DDDB2BBA-6F3F-435B-BE6A-FEBABEFC87FA")
-                });
-                _persons.Add(new Person()
-                {
-                    PersonID = Guid.Parse("B21384B3-A93D-4BE8-8975-5ECF7CE8FF54"),
-                    PersonName = "Binni",
-                    Email = "bbuncom1@linkedin.com",
-                    DateOfBirth = DateTime.Parse("2002-11-01"),
-                    Gender = "Female",
-                    Address = "016 Kensington Plaza",
-                    ReceiveNewsLetters = false,
-                    CountryID = Guid.Parse("36A415F5-263C-4BA4-BA9E-8626021B6B98")
-                });
-                _persons.Add(new Person()
-                {
-                    PersonID = Guid.Parse("5E16438A-F148-416E-B9D3-1FC9EAC4EB45"),
-                    PersonName = "Nanci",
-                    Email = "nbarbary2@epa.gov",
-                    DateOfBirth = DateTime.Parse("1990-05-26"),
-                    Gender = "Female",
-                    Address = "15 Schiller Parkway",
-                    ReceiveNewsLetters = true,
-                    CountryID = Guid.Parse("B7921BD9-FFE2-43BB-A869-B3182C46FFD6")
-                });
-                _persons.Add(new Person()
-                {
-                    PersonID = Guid.Parse("E8B3322E-B3D9-452C-AB61-2F82D70665D7"),
-                    PersonName = "Ailbert",
-                    Email = "afollows3@mtv.com",
-                    DateOfBirth = DateTime.Parse("1999-03-18"),
-                    Gender = "Male",
-                    Address = "8191 Westerfield Street",
-                    ReceiveNewsLetters = false,
-                    CountryID = Guid.Parse("B8432737-0689-4F3D-9E17-9B9D90B73A6D")
-                });
-                _persons.Add(new Person()
-                {
-                    PersonID = Guid.Parse("D233EED8-A532-4CE3-830D-C6B4AF3421C2"),
-                    PersonName = "Cesya",
-                    Email = "ciacovuzzi4@istockphoto.com",
-                    DateOfBirth = DateTime.Parse("2000-09-17"),
-                    Gender = "Female",
-                    Address = "208 Anniversary Alley",
-                    ReceiveNewsLetters = true,
-                    CountryID = Guid.Parse("1E91FE60-B4B4-4FE3-A0CA-1B910498C453")
-                });
-                _persons.Add(new Person()
-                {
-                    PersonID = Guid.Parse("F9B12DDF-C442-485E-90F1-5F933A723153"),
-                    PersonName = "Audra",
-                    Email = "alilleyman5@fc2.com",
-                    DateOfBirth = DateTime.Parse("1996-11-15"),
-                    Gender = "Female",
-                    Address = "78327 Schmedeman Hill",
-                    ReceiveNewsLetters = true,
-                    CountryID = Guid.Parse("1E91FE60-B4B4-4FE3-A0CA-1B910498C453")
-                });
-                _persons.Add(new Person()
-                {
-                    PersonID = Guid.Parse("F82E724A-A9CF-470B-B963-FCD6BFA2481D"),
-                    PersonName = "Jay",
-                    Email = "jpelfer6@nyu.edu",
-                    DateOfBirth = DateTime.Parse("1996-04-06"),
-                    Gender = "Male",
-                    Address = "80 Starling Terrace",
-                    ReceiveNewsLetters = true,
-                    CountryID = Guid.Parse("1E91FE60-B4B4-4FE3-A0CA-1B910498C453")
-                });
-                _persons.Add(new Person()
-                {
-                    PersonID = Guid.Parse("37339429-E583-41D5-8D86-43497CE8A89D"),
-                    PersonName = "Rafe",
-                    Email = "rwandtke7@creativecommons.org",
-                    DateOfBirth = DateTime.Parse("1999-05-01"),
-                    Gender = "Male",
-                    Address = "037 Esch Crossing",
-                    ReceiveNewsLetters = true,
-                    CountryID = Guid.Parse("1E91FE60-B4B4-4FE3-A0CA-1B910498C453")
-                });
-                /*
-Stephan,sbownas8@unesco.org,1997-12-07,Male,8507 Sunnyside Drive,false
-Nigel,ncolloby9@nbcnews.com,1993-04-30,Male,7 Steensland Park,false
-Agustin,alaysona@epa.gov,1992-06-07,Male,6803 Mcguire Avenue,true
-Jonis,jgreeningb@fastcompany.com,1993-05-28,Female,28355 Eagle Crest Center,true
-Catarina,cbenboughc@facebook.com,1994-01-10,Female,92917 Columbus Pass,false
-Tony,tmoodied@google.ca,1993-05-09,Female,4863 Nobel Drive,false
-Clim,cnieasse@wordpress.com,2001-10-10,Male,3 Lake View Point,false 
-                */
-            }
-        }
-        private PersonResponse ConvertPersonToPersonResponse(Person person)
-        {
-            PersonResponse response = person.ToPersonResponse();
-            response.Country = _countriesService.GetCountryByCountryID(person.CountryID)?.CountryName;
-            return response;
+            _db = personsDbContext;
+            _countriesService = countriesService;
         }
 
-        public PersonResponse AddPerson(PersonAddRequest? personAddRequest)
+        public async Task<PersonResponse> AddPerson(PersonAddRequest? personAddRequest)
         {
             //Validation: personAddRequet parameter can't be null
             if (personAddRequest == null)
@@ -140,34 +40,41 @@ Clim,cnieasse@wordpress.com,2001-10-10,Male,3 Lake View Point,false
             Person person = personAddRequest.ToPerson();
             //generate PersonID
             person.PersonID = Guid.NewGuid();
-            //add person object into _persons
-            _persons.Add(person);
-
-            return ConvertPersonToPersonResponse(person);
+            //add person object into _db
+            //without procedure
+            _db.Persons.Add(person);
+            await _db.SaveChangesAsync();
+            //with procedure:
+            //_db.sp_InsertPerson(person);
+            return person.ToPersonResponse();
         }
 
-        public List<PersonResponse> GetAllPersons()
+        public async Task<List<PersonResponse>> GetAllPersons()
         {
-            return _persons.Select(temp => ConvertPersonToPersonResponse(temp)).ToList();
+            var persons = await _db.Persons.Include("Country").ToListAsync();
+            return persons.Select(temp => temp.ToPersonResponse()).ToList();
+            //return _db.Persons.ToList().Select(temp => temp.ToPersonResponse()).ToList();
+            // return _db.sp_GetAllPersons().Select(temp => temp.ToPersonResponse()).ToList();
         }
 
-        public PersonResponse? GetPersonByPersonID(Guid? personID)
+        public async Task<PersonResponse?> GetPersonByPersonID(Guid? personID)
         {
             if (personID == null)
             {
                 return null;
             }
-            Person? person = _persons.FirstOrDefault(person => person.PersonID == personID);
+            //Person? person = _db.Persons.Include("Country").FirstOrDefault(person => person.PersonID == personID);
+            Person? person = await _db.Persons.FirstOrDefaultAsync(person => person.PersonID == personID);
             if (person == null)
             {
                 return null;
             }
-            return ConvertPersonToPersonResponse(person);
+            return person.ToPersonResponse();
         }
 
-        public List<PersonResponse> GetFilteredPersons(string searchBy, string? searchString)
+        public async Task<List<PersonResponse>> GetFilteredPersons(string searchBy, string? searchString)
         {
-            List<PersonResponse> allPersons = GetAllPersons();
+            List<PersonResponse> allPersons = await GetAllPersons();
             List<PersonResponse> matchingPersons = allPersons;
             if (string.IsNullOrEmpty(searchBy) || string.IsNullOrEmpty(searchString))
             {
@@ -206,7 +113,7 @@ Clim,cnieasse@wordpress.com,2001-10-10,Male,3 Lake View Point,false
 
         }
 
-        public List<PersonResponse> GetSortedPersons(List<PersonResponse> allPersons, string sortBy, SortOrderOptions sortOrder)
+        public async Task<List<PersonResponse>> GetSortedPersons(List<PersonResponse> allPersons, string sortBy, SortOrderOptions sortOrder)
         {
             if (string.IsNullOrEmpty(sortBy))
             {
@@ -251,7 +158,7 @@ Clim,cnieasse@wordpress.com,2001-10-10,Male,3 Lake View Point,false
             return sortedPersons;
         }
 
-        public PersonResponse UpdatePerson(PersonUpdateRequest? personUpdateRequest)
+        public async Task<PersonResponse> UpdatePerson(PersonUpdateRequest? personUpdateRequest)
         {
             if (personUpdateRequest == null)
             {
@@ -261,7 +168,7 @@ Clim,cnieasse@wordpress.com,2001-10-10,Male,3 Lake View Point,false
             ValidationHelper.ModelValidation(personUpdateRequest);
 
             //get matching person opject to update
-            Person? matchingPerson = _persons.FirstOrDefault(temp => temp.PersonID == personUpdateRequest.PersonID);
+            Person? matchingPerson = await _db.Persons.FirstOrDefaultAsync(temp => temp.PersonID == personUpdateRequest.PersonID);
             if (matchingPerson == null)
             {
                 throw new ArgumentException("Given person id doesn't exist");
@@ -275,23 +182,119 @@ Clim,cnieasse@wordpress.com,2001-10-10,Male,3 Lake View Point,false
             matchingPerson.Email = personUpdateRequest.Email;
             matchingPerson.CountryID = personUpdateRequest.CountryID;
             matchingPerson.ReceiveNewsLetters = personUpdateRequest.ReceiveNewsLetters;
-
-            return ConvertPersonToPersonResponse(matchingPerson);
+            await _db.SaveChangesAsync();
+            return matchingPerson.ToPersonResponse();
         }
 
-        public bool DeletePerson(Guid? personID)
+        public async Task<bool> DeletePerson(Guid? personID)
         {
             if (personID == null)
             {
                 throw new ArgumentNullException(nameof(personID));
             }
-            Person? person = _persons.FirstOrDefault(temp => temp.PersonID.Equals(personID));
+            Person? person = await _db.Persons.FirstOrDefaultAsync(temp => temp.PersonID.Equals(personID));
             if (person == null)
             {
                 return false;
             }
-            _persons.RemoveAll(temp => temp.PersonID.Equals(personID));
+            _db.Persons.Remove(_db.Persons.First(temp => temp.PersonID.Equals(personID)));
+            await _db.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<MemoryStream> GetPersonsCSV()
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            StreamWriter streamWriter = new StreamWriter(memoryStream);
+
+            CsvConfiguration csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture);
+            CsvWriter csvWriter = new CsvWriter(streamWriter, csvConfiguration);
+            csvWriter.WriteField(nameof(PersonResponse.PersonName));
+            csvWriter.WriteField(nameof(PersonResponse.Email));
+            csvWriter.WriteField(nameof(PersonResponse.DateOfBirth));
+            csvWriter.WriteField(nameof(PersonResponse.Age));
+            csvWriter.WriteField(nameof(PersonResponse.Gender));
+            csvWriter.WriteField(nameof(PersonResponse.Country));
+            csvWriter.WriteField(nameof(PersonResponse.Address));
+            csvWriter.WriteField(nameof(PersonResponse.ReceiveNewsLetters));
+            csvWriter.NextRecord();
+            List<PersonResponse> persons = await _db.Persons.Include("Country").Select(person => person.ToPersonResponse()).ToListAsync();
+            foreach (PersonResponse person in persons)
+            {
+                csvWriter.WriteField(person.PersonName);
+                csvWriter.WriteField(person.Email);
+                if (person.DateOfBirth.HasValue)
+                {
+                    csvWriter.WriteField(person.DateOfBirth.Value.ToString("yyyy-mmm-dd"));
+                }
+                else
+                {
+                    csvWriter.WriteField("");
+                }
+                csvWriter.WriteField(person.Age);
+                csvWriter.WriteField(person.Gender);
+                csvWriter.WriteField(person.Country);
+                csvWriter.WriteField(person.Address);
+                csvWriter.WriteField(person.ReceiveNewsLetters);
+                csvWriter.NextRecord();
+                csvWriter.Flush();
+            }
+
+            memoryStream.Position = 0;
+            return memoryStream;
+        }
+
+        public async Task<MemoryStream> GetPersonsExcel()
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            //ExcelPackage.License.SetNonCommercialOrganization("My Noncommercial organization");
+            using (ExcelPackage excelPackage = new ExcelPackage(memoryStream))
+            {
+                ExcelWorksheet workSheet = excelPackage.Workbook.Worksheets.Add("PersonsSheet");
+                workSheet.Cells["A1"].Value = "Person Name";
+                workSheet.Cells["B1"].Value = "Email";
+                workSheet.Cells["C1"].Value = "Date of Birth";
+                workSheet.Cells["D1"].Value = "Age";
+                workSheet.Cells["E1"].Value = "Gender";
+                workSheet.Cells["F1"].Value = "Country";
+                workSheet.Cells["G1"].Value = "Address";
+                workSheet.Cells["H1"].Value = "Receive News Letters";
+
+                using (ExcelRange headerCells = workSheet.Cells["A1:H1"])
+                {
+                    headerCells.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                    headerCells.Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                    headerCells.Style.Font.Bold = true;
+                }
+
+                int row = 2;
+                List<PersonResponse> persons = _db.Persons
+                  .Include("Country").Select(temp => temp.ToPersonResponse())
+                  .ToList();
+                foreach (PersonResponse person in persons)
+                {
+                    workSheet.Cells[row, 1].Value = person.PersonName;
+                    workSheet.Cells[row, 2].Value = person.Email;
+                    if (person.DateOfBirth.HasValue)
+                    {
+                        workSheet.Cells[row, 3].Value = person.DateOfBirth.Value.ToString("yyyy-MM-dd");
+                    }
+                    else
+                    {
+                        workSheet.Cells[row, 3].Value = "";
+                    }
+                    workSheet.Cells[row, 4].Value = person.Age;
+                    workSheet.Cells[row, 5].Value = person.Gender;
+                    workSheet.Cells[row, 6].Value = person.Country;
+                    workSheet.Cells[row, 7].Value = person.Address;
+                    workSheet.Cells[row, 8].Value = person.ReceiveNewsLetters;
+                    row++;
+                }
+                workSheet.Cells[$"A1:H{row}"].AutoFitColumns();
+                await excelPackage.SaveAsync();
+            }
+            memoryStream.Position = 0;
+            return memoryStream;
         }
     }
 }
