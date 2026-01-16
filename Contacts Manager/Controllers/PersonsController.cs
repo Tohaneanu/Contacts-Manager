@@ -150,7 +150,7 @@ namespace Contacts_Manager.Controllers
         public async Task<IActionResult> PersonsPDF()
         {
             //get all persons
-           List<PersonResponse> persons = await _personService.GetAllPersons();
+            List<PersonResponse> persons = await _personService.GetAllPersons();
 
             //return view as pdf
             return new ViewAsPdf("PersonsPDF", persons, ViewData)
@@ -162,8 +162,16 @@ namespace Contacts_Manager.Controllers
                     Bottom = 20,
                     Left = 20,
                 },
-                PageOrientation = Rotativa.AspNetCore.Options.Orientation.Landscape                
+                PageOrientation = Rotativa.AspNetCore.Options.Orientation.Landscape
             };
+        }
+
+        [HttpGet]
+        [Route("[action]")]
+        public async Task<IActionResult> PersonsCSV()
+        {
+            MemoryStream memoryStream = await _personService.GetPersonsCSV();
+            return File(memoryStream, "application/octet-stream", "persons.csv");
         }
     }
 }
