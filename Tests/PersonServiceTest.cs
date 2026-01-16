@@ -1,5 +1,6 @@
 ﻿
 using Entities;
+using EntityFrameworkCoreMock;
 using Microsoft.EntityFrameworkCore;
 using ServiceContracts;
 using ServiceContracts.DTO;
@@ -18,8 +19,16 @@ namespace Tests
         //constructor
         public PersonServiceTest(ITestOutputHelper testOutputHelper)
         {
-            _countriesService = new CountriesService(new PersonsDbContext(new DbContextOptionsBuilder<PersonsDbContext>().Options));
-            _personService = new PersonService(new PersonsDbContext(new DbContextOptionsBuilder<PersonsDbContext>().Options), _countriesService);
+            var countriesInitialData = new List<Country>() { };
+            var personsInitialData = new List<Person>() { };
+            DbContextMock<ApplicationDbContext> dbContextMock = new DbContextMock<ApplicationDbContext>(new DbContextOptionsBuilder<ApplicationDbContext>().Options);
+
+            ApplicationDbContext dbContext = dbContextMock.Object;
+            dbContextMock.CreateDbSetMock(temp => temp.Countries, countriesInitialData);
+            dbContextMock.CreateDbSetMock(temp => temp.Persons, personsInitialData);
+            _countriesService = new CountriesService(dbContext);
+            _personService = new PersonService(dbContext, _countriesService);
+
             _outputHelper = testOutputHelper;
         }
 
