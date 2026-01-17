@@ -32,8 +32,8 @@ namespace Tests
             ApplicationDbContext dbContext = dbContextMock.Object;
             dbContextMock.CreateDbSetMock(temp => temp.Countries, countriesInitialData);
             dbContextMock.CreateDbSetMock(temp => temp.Persons, personsInitialData);
-            _countriesService = new CountriesService(dbContext);
-            _personService = new PersonService(dbContext, _countriesService);
+            _countriesService = new CountriesService(null);
+            _personService = new PersonService(null);
 
             _outputHelper = testOutputHelper;
         }
