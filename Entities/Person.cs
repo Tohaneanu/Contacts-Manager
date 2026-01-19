@@ -25,5 +25,12 @@ namespace Entities
         public string? TIN { get; set; }
         [ForeignKey("CountryID")]
         public virtual Country? Country { get; set; }
+
+        public override string ToString()
+        {
+            return $"Person ID: {PersonID}, Person Name: {PersonName}, Email: {Email}," +
+                $" Date of Birth: {DateOfBirth?.ToString("dd MMM yyyy")}, Gender: {Gender}," +
+                $" Country ID: {CountryID}, Country: {Country}, Address: {Address}, Receive News Letters: {ReceiveNewsLetters}";
+        }
     }
 }

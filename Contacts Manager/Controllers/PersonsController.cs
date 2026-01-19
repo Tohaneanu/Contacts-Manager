@@ -13,12 +13,14 @@ namespace Contacts_Manager.Controllers
         //private fields
         private readonly IPersonService _personService;
         private readonly ICountriesService _countresService;
+        private readonly ILogger<PersonsController> _logger;
 
         //constructor
-        public PersonsController(IPersonService personService, ICountriesService countresService)
+        public PersonsController(IPersonService personService, ICountriesService countresService, ILogger<PersonsController> logger)
         {
             _personService = personService;
             _countresService = countresService;
+            _logger = logger;
         }
 
         [Route("[action]")]
@@ -27,6 +29,8 @@ namespace Contacts_Manager.Controllers
             string sortBy = nameof(PersonResponse.PersonName),
             SortOrderOptions sortOrder = SortOrderOptions.ASC)
         {
+            _logger.LogInformation("Index action in Persons controller");
+            _logger.LogDebug($"searchBy: {searchBy}, searchString: {searchString}, sortBy: {sortBy}, sortOrder: {sortOrder}, ");
             //Search
             ViewBag.SearchFields = new Dictionary<string, string>()
             {
