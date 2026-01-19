@@ -3,6 +3,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
 using RepositoryContracts;
 using ServiceContracts;
@@ -17,11 +18,13 @@ namespace Services
     public class PersonService : IPersonService
     {
         private readonly IPersonsRepository _personsRepository;
+        private readonly ILogger<PersonService> _logger;
 
         //contructor
-        public PersonService(IPersonsRepository personsRepository)
+        public PersonService(IPersonsRepository personsRepository, ILogger<PersonService> logger)
         {
             _personsRepository = personsRepository;
+            _logger = logger;
         }
 
         public async Task<PersonResponse> AddPerson(PersonAddRequest? personAddRequest)
@@ -49,6 +52,7 @@ namespace Services
 
         public async Task<List<PersonResponse>> GetAllPersons()
         {
+            _logger.LogInformation("GetAllPersons of PersonsService");
             var persons = await _personsRepository.GetAllPersons();
             return persons.Select(temp => temp.ToPersonResponse()).ToList();
             //return _db.Persons.ToList().Select(temp => temp.ToPersonResponse()).ToList();
@@ -72,6 +76,7 @@ namespace Services
 
         public async Task<List<PersonResponse>> GetFilteredPersons(string searchBy, string? searchString)
         {
+            _logger.LogInformation("GetFilteredPersons of PersonsService");
             List<Person> persons = searchBy switch
             {
                 nameof(PersonResponse.PersonName) =>
@@ -100,6 +105,7 @@ namespace Services
 
         public async Task<List<PersonResponse>> GetSortedPersons(List<PersonResponse> allPersons, string sortBy, SortOrderOptions sortOrder)
         {
+            _logger.LogInformation("GetSortedPersons of PersonsService");
             if (string.IsNullOrEmpty(sortBy))
             {
                 return allPersons;
