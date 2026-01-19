@@ -1,20 +1,17 @@
 ﻿
 using AutoFixture;
-using AutoFixture.Kernel;
 using Entities;
-using EntityFrameworkCoreMock;
 using FluentAssertions;
-using FluentAssertions.Execution;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 using RepositoryContracts;
+using Serilog;
 using ServiceContracts;
 using ServiceContracts.DTO;
 using ServiceContracts.Enums;
 using Services;
-using System;
 using System.Linq.Expressions;
 using Xunit.Abstractions;
+using Microsoft.Extensions.Logging;
 
 namespace Tests
 {
@@ -44,7 +41,9 @@ namespace Tests
             //dbContextMock.CreateDbSetMock(temp => temp.Countries, countriesInitialData);
             //dbContextMock.CreateDbSetMock(temp => temp.Persons, personsInitialData);
             //_countriesService = new CountriesService(null);
-            _personService = new PersonService(_personsRepository);
+            var diagnosticContextMock = new Mock<IDiagnosticContext>();
+            var loggerMock = new Mock<ILogger<PersonService>>();
+            _personService = new PersonService(_personsRepository,loggerMock.Object, diagnosticContextMock.Object);
 
             _outputHelper = testOutputHelper;
         }
