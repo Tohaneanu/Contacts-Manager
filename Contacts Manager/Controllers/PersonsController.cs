@@ -1,5 +1,6 @@
 ﻿using Contacts_Manager.Filters.ActionFilters;
 using Contacts_Manager.Filters.AuthorizationFilter;
+using Contacts_Manager.Filters.ExceptionFilters;
 using Contacts_Manager.Filters.ResultFilters;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -12,6 +13,7 @@ namespace Contacts_Manager.Controllers
 {
     [Route("[controller]")]
     [TypeFilter(typeof(ResponseHeaderActionFilter), Arguments = new object[] { "X-Custom-Key-Controller", "Custom-Value-Controller" })]
+    [TypeFilter(typeof(HandleExceptionFilter))]
     public class PersonsController : Controller
     {
         //private fields
