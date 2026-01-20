@@ -29,6 +29,7 @@ namespace Contacts_Manager.Controllers
         [Route("/")]
         [TypeFilter(typeof(PersonsListActionFilter))]
         [TypeFilter(typeof(ResponseHeaderActionFilter), Arguments = new object[] { "X-Custom-Key", "Custom-Value" })]
+        [TypeFilter(typeof(PersonsListActionFilter))]
         public async Task<IActionResult> Index(string searchBy, string? searchString, string sortBy = nameof(PersonResponse.PersonName),
             SortOrderOptions sortOrder = SortOrderOptions.ASC)
         {
