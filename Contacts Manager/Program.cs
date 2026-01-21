@@ -7,6 +7,7 @@ using Services;
 using Serilog;
 using Contacts_Manager.Filters.ActionFilters;
 using Contacts_Manager;
+using Contacts_Manager.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,11 +28,17 @@ builder.Services.ConfigureServices(builder.Configuration);
 
 var app = builder.Build();
 
-app.UseSerilogRequestLogging();
 if (builder.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
+else
+{
+    app.UseExceptionHandler("/Error");
+    app.UseExceptionHandlingMiddleware();
+}
+
+app.UseSerilogRequestLogging();
 //Http logging
 app.UseHttpLogging();
 
