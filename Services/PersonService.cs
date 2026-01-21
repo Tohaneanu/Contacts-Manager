@@ -2,6 +2,7 @@
 using CsvHelper;
 using CsvHelper.Configuration;
 using Entities;
+using Exceptions;
 using Microsoft.Extensions.Logging;
 using OfficeOpenXml;
 using RepositoryContracts;
@@ -169,7 +170,7 @@ namespace Services
             Person? matchingPerson = await _personsRepository.GetPersonByPersonID(personUpdateRequest.PersonID);
             if (matchingPerson == null)
             {
-                throw new ArgumentException("Given person id doesn't exist");
+                throw new InvalidPersonIDException("Given person id doesn't exist");
             }
 
             //update all details
