@@ -1,0 +1,19 @@
+﻿using ServiceContracts.DTO;
+using ServiceContracts.Enums;
+
+namespace ServiceContracts
+{
+    /// <summary>
+    /// Represents business logic for manipulating Person entity
+    /// </summary>
+    public interface IPersonsUpdaterService
+    {
+        /// <summary>
+        /// Updates the specified person details based on the given personID
+        /// </summary>
+        /// <param name="personUpdateRequest">Person details to update, including personID</param>
+        /// <returns>Returns the person response object after updation</returns>
+        Task<PersonResponse> UpdatePerson(PersonUpdateRequest? personUpdateRequest);
+
+    }
+}
