@@ -13,7 +13,7 @@ namespace ContactsManager.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20260125161149_initial")]
-    partial class initial
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
