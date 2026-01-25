@@ -17,7 +17,7 @@ namespace Tests
 {
     public class PersonServiceTest
     {
-        private readonly IPersonService _personService;
+        private readonly IPersonsAdderService _personService;
         //private readonly ICountriesService _countriesService;
 
         private readonly Mock<IPersonsRepository> _personRepositoryMock;
@@ -42,7 +42,7 @@ namespace Tests
             //dbContextMock.CreateDbSetMock(temp => temp.Persons, personsInitialData);
             //_countriesService = new CountriesService(null);
             var diagnosticContextMock = new Mock<IDiagnosticContext>();
-            var loggerMock = new Mock<ILogger<PersonService>>();
+            var loggerMock = new Mock<ILogger<PersonsAdderService>>();
             _personService = new PersonService(_personsRepository,loggerMock.Object, diagnosticContextMock.Object);
 
             _outputHelper = testOutputHelper;

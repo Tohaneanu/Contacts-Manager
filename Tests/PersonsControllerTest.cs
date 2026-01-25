@@ -16,11 +16,11 @@ namespace Tests
     public class PersonsControllerTest
     {
         private readonly ICountriesService _countriesService;
-        private readonly IPersonService _personsService;
+        private readonly IPersonsAdderService _personsService;
         private readonly ILogger<PersonsController> _logger;
 
         private readonly Mock<ICountriesService> _countriesServiceMock;
-        private readonly Mock<IPersonService> _personsServiceMock;
+        private readonly Mock<IPersonsAdderService> _personsServiceMock;
         private readonly Mock<ILogger<PersonsController>> _loggerMock;
 
         private readonly Fixture _fixture;
@@ -29,7 +29,7 @@ namespace Tests
         {
             _fixture = new Fixture();
             _countriesServiceMock = new Mock<ICountriesService>();
-            _personsServiceMock = new Mock<IPersonService>();
+            _personsServiceMock = new Mock<IPersonsAdderService>();
             _loggerMock = new Mock<ILogger<PersonsController>>();
             _countriesService = _countriesServiceMock.Object;
             _personsService = _personsServiceMock.Object;
