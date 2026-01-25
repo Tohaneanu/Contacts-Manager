@@ -1,4 +1,7 @@
-﻿using Entities;
+﻿using ContactsManager.Core.Domain.IdentityEntities;
+using Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Repositories;
 using RepositoryContracts;
@@ -37,6 +40,12 @@ namespace Contacts_Manager
 
             services.AddDbContext<ApplicationDbContext>(options =>
             { options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")); });
+
+            services.AddIdentity<ApplicationUser, ApplicationRole>()
+                .AddDefaultTokenProviders()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddUserStore<UserStore<ApplicationUser, ApplicationRole, ApplicationDbContext, Guid>>()
+                .AddRoleStore<RoleStore<ApplicationRole, ApplicationDbContext, Guid>>();
 
             //http logging
             services.AddHttpLogging(options =>
