@@ -27,6 +27,10 @@ namespace Contacts_Manager
 
             services.AddScoped<ICountriesService, CountriesService>();
             services.AddScoped<IPersonsAdderService, PersonsAdderService>();
+            services.AddScoped<IPersonsGetterService, PersonsGetterService>();
+            services.AddScoped<IPersonsUpdaterService, PersonsUpdaterService>();
+            services.AddScoped<IPersonsDeleterService, PersonsDeleterService>();
+            services.AddScoped<IPersonsSorterService, PersonsSorterService>();
 
             services.AddDbContext<ApplicationDbContext>(options =>
             { options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")); });
