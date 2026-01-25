@@ -29,8 +29,8 @@ namespace Contacts_Manager
             services.AddScoped<IPersonsAdderService, PersonsAdderService>();
             //services.AddScoped<IPersonsGetterService, PersonsGetterService>();
             services.AddScoped<PersonsGetterService, PersonsGetterService>();
-            services.AddScoped<IPersonsGetterService, PersonsGetterServiceChild>();
-            //services.AddScoped<IPersonsGetterService, PersonsGetterServiceWithFewExcelFields>();
+            //services.AddScoped<IPersonsGetterService, PersonsGetterServiceChild>();
+            services.AddScoped<IPersonsGetterService, PersonsGetterServiceWithFewExcelFields>();
             services.AddScoped<IPersonsUpdaterService, PersonsUpdaterService>();
             services.AddScoped<IPersonsDeleterService, PersonsDeleterService>();
             services.AddScoped<IPersonsSorterService, PersonsSorterService>();
