@@ -1,4 +1,8 @@
-﻿using Entities;
+﻿using ContactsManager.Core.Domain.IdentityEntities;
+using Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Repositories;
 using RepositoryContracts;
@@ -37,6 +41,36 @@ namespace Contacts_Manager
 
             services.AddDbContext<ApplicationDbContext>(options =>
             { options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")); });
+
+            services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+            {
+                options.Password.RequiredLength = 5;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequiredUniqueChars = 3;
+            })
+                .AddDefaultTokenProviders()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddUserStore<UserStore<ApplicationUser, ApplicationRole, ApplicationDbContext, Guid>>()
+                .AddRoleStore<RoleStore<ApplicationRole, ApplicationDbContext, Guid>>();
+
+            services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build(); // enforces authorization policy (user must be authenticated) for all the action methods
+
+                options.AddPolicy("NotAuthorized", policy =>
+                {
+                    policy.RequireAssertion(context =>
+                    {
+                        return !context.User.Identity.IsAuthenticated;
+                    });
+                });
+            });
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+            });
 
             //http logging
             services.AddHttpLogging(options =>

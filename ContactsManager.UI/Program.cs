@@ -31,6 +31,9 @@ else
     app.UseExceptionHandlingMiddleware();
 }
 
+app.UseHsts();
+app.UseHttpsRedirection();
+
 app.UseSerilogRequestLogging();
 //Http logging
 app.UseHttpLogging();
@@ -41,8 +44,18 @@ if (!builder.Environment.IsEnvironment("Test"))
 }
 
 app.UseStaticFiles();
-app.UseRouting();
-app.MapControllers();
+
+app.UseRouting(); //identifying action method based route
+app.UseAuthentication(); //reading identity cookie
+app.UseAuthorization(); //validates access permissions of the user
+app.MapControllers(); //execute the filter pipeline(action + filters)
+////conventional routing for admin
+//app.UseEndpoints(endpoints =>
+//{
+//    endpoints.MapControllerRoute(name: "areas", pattern: "{area:exists}/{controller=Home}/{action=Index}");
+//    //Admin/Home/Index
+//    //Admin
+//});
 
 app.Run();
 
