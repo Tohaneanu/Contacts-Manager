@@ -31,6 +31,12 @@
                                         <i class="fa-solid fa-user"></i>
                                         @User.Identity?.Name
                                     </li>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li>
+                                            <a asp-action="Index" asp-controller="Home" asp-area="Admin">Admin Home</a>
+                                        </li>
+                                    }
                                     <li>
                                         <a asp-action="Logout" asp-controller="Account">Logout</a>
                                     </li>

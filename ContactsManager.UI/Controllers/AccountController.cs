@@ -50,10 +50,10 @@ namespace ContactsManager.UI.Controllers
             if (result.Succeeded)
             {
                 //check status of radio button
-                if(registerDTO.UserType == UserTypeOptions.Admin)
+                if (registerDTO.UserType == UserTypeOptions.Admin)
                 {
                     //Create 'Admin role
-                    if(await _roleManager.FindByNameAsync(UserTypeOptions.Admin.ToString()) is null)
+                    if (await _roleManager.FindByNameAsync(UserTypeOptions.Admin.ToString()) is null)
                     {
                         ApplicationRole applicationRole = new ApplicationRole()
                         {
@@ -69,8 +69,8 @@ namespace ContactsManager.UI.Controllers
                     //Add the user into 'User' role
                     await _userManager.AddToRoleAsync(user, UserTypeOptions.User.ToString());
                 }
-                    //Sign in
-                    await _singInManager.SignInAsync(user, false);
+                //Sign in
+                await _singInManager.SignInAsync(user, false);
                 return RedirectToAction(nameof(PersonsController.Index), "Persons");
             }
             else
@@ -101,6 +101,15 @@ namespace ContactsManager.UI.Controllers
             var result = await _singInManager.PasswordSignInAsync(loginDTO.Email, loginDTO.Password, isPersistent: false, lockoutOnFailure: false);
             if (result.Succeeded)
             {
+                //Admin
+                ApplicationUser user = await _userManager.FindByEmailAsync(loginDTO.Email);
+                if (user != null)
+                {
+                    if (await _userManager.IsInRoleAsync(user, UserTypeOptions.Admin.ToString()))
+                    {
+                        return RedirectToAction("Index", "Home", new { area = "Admin" });
+                    }
+                }
                 if (!string.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
                 {
                     return LocalRedirect(ReturnUrl);
@@ -120,7 +129,7 @@ namespace ContactsManager.UI.Controllers
         public async Task<IActionResult> IsEmailAlreadyRegistered(string email)
         {
             ApplicationUser? user = await _userManager.FindByEmailAsync(email);
-            if(user == null)
+            if (user == null)
             {
                 return Json(true); //valid
             }
