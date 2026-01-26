@@ -3,6 +3,7 @@ using Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Repositories;
 using RepositoryContracts;
@@ -16,14 +17,15 @@ namespace Contacts_Manager
         public static IServiceCollection ConfigureServices(this IServiceCollection services, IConfiguration configuration)
         {
             //adds controllers and views as services
-            services.AddControllersWithViews();
+            //services.AddControllersWithViews();
             //Global filter
-            //services.AddControllersWithViews(options =>
-            //{
-            //    options.Filters.Add<ResponseHeaderActionFilter>(); //without arguments
-            //    var logger = services.BuildServiceProvider().GetRequiredService<ILogger<ResponseHeaderActionFilter>>();
-            //    options.Filters.Add(new ResponseHeaderActionFilter(logger, "My-Key-From-Global", "My-Value-From-Global"));
-            //});
+            services.AddControllersWithViews(options =>
+            {
+                //    options.Filters.Add<ResponseHeaderActionFilter>(); //without arguments
+                //    var logger = services.BuildServiceProvider().GetRequiredService<ILogger<ResponseHeaderActionFilter>>();
+                //    options.Filters.Add(new ResponseHeaderActionFilter(logger, "My-Key-From-Global", "My-Value-From-Global"));
+                options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+            });
 
             //add services into IoC container
             services.AddScoped<ICountriesRepository, CountriesRepository>();
